@@ -1,20 +1,21 @@
 const express = require('express');
 const cors = require('cors');
 const { MongoClient, ServerApiVersion, ObjectId } = require('mongodb');
-const jwt = require('jsonwebtoken');
-const cookieParser = require('cookie-parser');
 require('dotenv').config();
 const app = express();
 const port = process.env.PORT || 5000;
 
+app.use(cors(
+    {
+        origin: ['http://localhost:5173/', 'https://shelf2borrow.web.app/', 'https://shelf2borrow.firebaseapp.com/']
+    }
+));
+app.use((req, res, next) => {
+    res.header('Access-Control-Allow-Origin', '*');
+    res.header('Access-Control-Allow-Headers', 'Origin, X-Requested-With, Content-Type, Accept');
+    next();
+});
 app.use(express.json());
-app.use(cors({
-    origin: [
-        "http://localhost:5173"
-    ],
-    credentials: true
-}));
-app.use(cookieParser());
 
 
 
@@ -33,31 +34,8 @@ const client = new MongoClient(uri, {
 async function run() {
     try {
         // Connect the client to the server	(optional starting in v4.7)
-        await client.connect();
+        // await client.connect();
         // Send a ping to confirm a successful connection
-
-        //auth api
-        app.post('/jwt', async (req, res) => {
-            const user = req.body;
-            const token = jwt.sign(user, process.env.ACCES_TOKEN_SECRET, { expiresIn: '1h' })
-            res.cookie('token', token,
-                {
-                    httpOnly: true,
-                    secure: true,
-                    sameSite: 'none'
-                })
-                .send({ success: true })
-        })
-
-        app.post('/logout', async (req, res) => {
-            const user = req.body;
-
-            res.clearCookie('token').send({ success: true })
-                .send({ success: true })
-
-        }
-        )
-
 
 
         //service api
