@@ -32,6 +32,7 @@ async function run() {
         const booksCollection = client.db('bookDB').collection('booksCollection')
         const newArrivalCollection = client.db('bookDB').collection('newArrivalCollection')
         const featuredAuthorCollection = client.db('bookDB').collection('featuredAuthorCollection')
+        const borrowedBooksCollection = client.db('bookDB').collection('borrowedBooksCollection')
 
         app.get('/categories', async (req, res) => {
             const cursor = categoryCollection.find();
@@ -61,6 +62,31 @@ async function run() {
             const book = req.body;
             const result = await booksCollection.insertOne(book);
             res.json(result)
+        })
+
+        app.post('/borrowedBooks', async (req, res) => {
+            const book = req.body;
+            const result = await borrowedBooksCollection.insertOne(book);
+            res.json(result)
+        })
+
+        app.get('/borrowedBooks', async (req, res) => {
+
+            let query = {};
+
+            if (req.query?.email) {
+                query = { email: req.query?.email }
+            }
+            const cursor = borrowedBooksCollection.find();
+            const result = await cursor.toArray();
+            res.send(result)
+        })
+
+        app.delete('/borrowedBooks/:id', async (req, res) => {
+            const id = req.params.id;
+            const query = { _id: new ObjectId(id) }
+            const result = await borrowedBooksCollection.deleteOne(query);
+            res.send(result)
         })
 
         app.put('/books/:id', async (req, res) => {
