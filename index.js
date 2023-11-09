@@ -5,17 +5,8 @@ require('dotenv').config();
 const app = express();
 const port = process.env.PORT || 5000;
 
-app.use(cors(
-    {
-        origin: ['http://localhost:5173/', 'https://shelf2borrow.web.app/', 'https://shelf2borrow.firebaseapp.com/']
-    }
-));
-app.use((req, res, next) => {
-    res.header('Access-Control-Allow-Origin', '*');
-    res.header('Access-Control-Allow-Headers', 'Origin, X-Requested-With, Content-Type, Accept');
-    next();
-});
 app.use(express.json());
+app.use(cors());
 
 
 
@@ -34,8 +25,9 @@ const client = new MongoClient(uri, {
 async function run() {
     try {
         // Connect the client to the server	(optional starting in v4.7)
-        // await client.connect();
+        await client.connect();
         // Send a ping to confirm a successful connection
+
 
 
         //service api
